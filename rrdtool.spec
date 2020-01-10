@@ -9,12 +9,14 @@
 Summary: Round Robin Database Tool to store and display time-series data
 Name: rrdtool
 Version: 1.3.8
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: GPLv2+ with exceptions
 Group: Applications/Databases
 URL: http://oss.oetiker.ch/rrdtool/
 Source0: http://oss.oetiker.ch/%{name}/pub/%{name}-%{version}.tar.gz
 Source1: php4-%{svnrev}.tar.gz
+# Backport of upstream patch (rhbz#914688)
+Patch0: rrdtool-1.3.8-reduce-after-fetch.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: dejavu-sans-mono-fonts, dejavu-lgc-sans-mono-fonts
 BuildRequires: gcc-c++, openssl-devel, freetype-devel
@@ -139,6 +141,8 @@ The %{name}-ruby package includes RRDtool bindings for Ruby.
 
 %prep
 %setup -q -n %{name}-%{version} %{?with_php: -a 1}
+
+%patch0 -p1 -b .reduce-after-fetch
 
 # Fix to find correct python dir on lib64
 %{__perl} -pi -e 's|get_python_lib\(0,0,prefix|get_python_lib\(1,0,prefix|g' \
@@ -323,6 +327,10 @@ find examples/ -type f -exec chmod 0644 {} \;
 %endif
 
 %changelog
+* Fri Feb 22 2013 Jaroslav Škarvada <jskarvad@redhat.com> - 1.3.8-7
+- Forced reduce after fetch by reduce-after-fetch patch
+  Resolves: rhbz#914688
+
 * Wed Jan 13 2010 Stepan Kasal <skasal@redhat.com> - 1.3.8-6
 - remove python_* macros clashing with the built-in ones
 - fix for new vendorlib directory

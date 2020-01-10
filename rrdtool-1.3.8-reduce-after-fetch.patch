@@ -1,0 +1,23 @@
+commit 02a13d4f9f99b024d115f2f1d89256019e938ed5
+Author: Tobias Oetiker <tobi@oetiker.ch>
+Date:   Thu Nov 24 14:26:30 2011 +0000
+
+    after fetching, data must be reduced to at least chart resolution, else some data will not get plotted. fix for #298
+    
+    git-svn-id: svn://svn.oetiker.ch/rrdtool/branches/1.4/program@2221 a5681a0c-68f1-0310-ab6d-d61299d08faa
+
+diff --git a/src/rrd_graph.c b/src/rrd_graph.c
+index 3af1942..8c3f8be 100644
+--- a/src/rrd_graph.c
++++ b/src/rrd_graph.c
+@@ -896,6 +896,10 @@ int data_fetch(
+             }
+             im->gdes[i].data_first = 1;
+ 
++            /* must reduce to at least im->step
++               otherwhise we end up with more data than we can handle in the 
++               chart and visibility of data will be random */            
++            im->gdes[i].step = max(im->gdes[i].step,im->step);
+             if (ft_step < im->gdes[i].step) {
+                 reduce_data(im->gdes[i].cf_reduce,
+                             ft_step,
