@@ -1,0 +1,72 @@
+diff --git a/bindings/perl-piped/Makefile.PL b/bindings/perl-piped/Makefile.PL
+index 5c1a98f..f4cc014 100644
+--- a/bindings/perl-piped/Makefile.PL
++++ b/bindings/perl-piped/Makefile.PL
+@@ -5,6 +5,7 @@ use ExtUtils::MakeMaker;
+ WriteMakefile(
+     'NAME'         => 'RRDp',
+     'VERSION'      => '0.99.0', # finds $VERSION
++    'OTHERLDFLAGS' => '-Wl,-z,relro',
+     'linkext'   => {LINKTYPE => ''},
+     'dist'    =>    {COMPRESS=>'gzip', SUFFIX=>'gz'},
+ );
+diff --git a/bindings/perl-shared/Makefile.PL b/bindings/perl-shared/Makefile.PL
+index c457307..2bb7fd4 100644
+--- a/bindings/perl-shared/Makefile.PL
++++ b/bindings/perl-shared/Makefile.PL
+@@ -11,7 +11,7 @@ if ($ARGV[-1] =~ /RPATH=(\S+)/){
+ 	pop @ARGV;
+ 	my $rp = $1;
+ 	for ($^O){
+-	        /linux/   && do{ $R = "-Wl,--rpath -Wl,$rp"};
++	        /linux/   && do{ $R = "-Wl,--rpath -Wl,$rp -Wl,-z,relro"};
+ 	        /hpux/    && do{ $R = "+b$rp"};
+ 	        /solaris/ && do{ $R = "-R$rp"};
+ 	        /bsd/     && do{ $R = "-R$rp"};
+diff --git a/bindings/ruby/extconf.rb b/bindings/ruby/extconf.rb
+index 2045e5a..0ccf9e1 100644
+--- a/bindings/ruby/extconf.rb
++++ b/bindings/ruby/extconf.rb
+@@ -4,7 +4,7 @@
+ require 'mkmf'
+ 
+ if /linux/ =~ RUBY_PLATFORM
+-   $LDFLAGS += '-Wl,--rpath -Wl,$(EPREFIX)/lib'
++   $LDFLAGS += '-Wl,--rpath -Wl,$(EPREFIX)/lib -Wl,-z,relro'
+ elsif /solaris/ =~ RUBY_PLATFORM
+    $LDFLAGS += '-R$(EPREFIX)/lib'
+ elsif /hpux/ =~ RUBY_PLATFORM
+diff --git a/php4/ltconfig b/php4/ltconfig
+index 72bb238..3efcdae 100755
+--- a/php4/ltconfig
++++ b/php4/ltconfig
+@@ -1237,7 +1237,7 @@ EOF
+ 
+   *)
+     if $LD --help 2>&1 | egrep ': supported targets:.* elf' > /dev/null; then
+-      archive_cmds='$CC -shared $compile_rpath $libobjs $deplibs $linkopts ${wl}-soname $wl$soname -o $lib'
++      archive_cmds='$CC -shared $compile_rpath $libobjs $deplibs $linkopts ${wl}-soname $wl$soname ${wl}-z,relro -o $lib'
+       archive_expsym_cmds='$CC -shared $compile_rpath $libobjs $deplibs $linkopts ${wl}-soname $wl$soname ${wl}-retain-symbols-file $wl$export_symbols -o $lib'
+     else
+       ld_shlibs=no
+diff --git a/src/Makefile.in b/src/Makefile.in
+index fb863bd..626b413 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -522,13 +522,13 @@ clean-binPROGRAMS:
+ 	done
+ rrdcgi$(EXEEXT): $(rrdcgi_OBJECTS) $(rrdcgi_DEPENDENCIES) 
+ 	@rm -f rrdcgi$(EXEEXT)
+-	$(LINK) $(rrdcgi_OBJECTS) $(rrdcgi_LDADD) $(LIBS)
++	$(LINK) $(rrdcgi_OBJECTS) $(rrdcgi_LDADD) $(LIBS) -pie
+ rrdtool$(EXEEXT): $(rrdtool_OBJECTS) $(rrdtool_DEPENDENCIES) 
+ 	@rm -f rrdtool$(EXEEXT)
+-	$(LINK) $(rrdtool_OBJECTS) $(rrdtool_LDADD) $(LIBS)
++	$(LINK) $(rrdtool_OBJECTS) $(rrdtool_LDADD) $(LIBS) -pie
+ rrdupdate$(EXEEXT): $(rrdupdate_OBJECTS) $(rrdupdate_DEPENDENCIES) 
+ 	@rm -f rrdupdate$(EXEEXT)
+-	$(LINK) $(rrdupdate_OBJECTS) $(rrdupdate_LDADD) $(LIBS)
++	$(LINK) $(rrdupdate_OBJECTS) $(rrdupdate_LDADD) $(LIBS) -pie
+ 
+ mostlyclean-compile:
+ 	-rm -f *.$(OBJEXT)
