@@ -15,7 +15,7 @@
 Summary: Round Robin Database Tool to store and display time-series data
 Name: rrdtool
 Version: 1.4.8
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: GPLv2+ with exceptions
 Group: Applications/Databases
 URL: http://oss.oetiker.ch/rrdtool/
@@ -99,7 +99,7 @@ Provides: python-%{name} = %{version}-%{release}
 Python RRDtool bindings.
 %endif
 
-%ifarch ppc64
+%ifarch %{power64}
 # php bits busted on ppc64 at the moment
 %define with_php 0
 %endif
@@ -387,6 +387,10 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} php -n \
 %endif
 
 %changelog
+* Tue Aug 12 2014 Jaroslav Škarvada <jskarvad@redhat.com> - 1.4.8-9
+- Fixing build on ppc64le
+  Resolves: rhbz#1125670
+
 * Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 1.4.8-8
 - Mass rebuild 2014-01-24
 
