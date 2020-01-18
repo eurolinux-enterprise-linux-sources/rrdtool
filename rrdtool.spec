@@ -15,7 +15,7 @@
 Summary: Round Robin Database Tool to store and display time-series data
 Name: rrdtool
 Version: 1.4.8
-Release: 6%{?dist}
+Release: 8%{?dist}
 License: GPLv2+ with exceptions
 Group: Applications/Databases
 URL: http://oss.oetiker.ch/rrdtool/
@@ -387,6 +387,12 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} php -n \
 %endif
 
 %changelog
+* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 1.4.8-8
+- Mass rebuild 2014-01-24
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1.4.8-7
+- Mass rebuild 2013-12-27
+
 * Mon Nov  4 2013 Jaroslav Škarvada <jskarvad@redhat.com> - 1.4.8-6
 - Fixed multilib problems
   Resolves: rhbz#881248
